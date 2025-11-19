@@ -3,7 +3,7 @@ const config = require('../config')
 const bcrypt = require('bcrypt')
 const userModel = require('../models/users.model')
 const { v4: uuidv4 } = require("uuid");
-const { sendVerificationEmail } = require("../utils/mailer");
+const { sendVerificationEmail } = require("../services/mailer.service");
 const {successHandler, errorHandler} = require('../utils/helper.responses')
 
 const getAllUsers = async (req, res) => {
@@ -224,7 +224,7 @@ const loginUser = async (req, res) => {
 
         // Buat token JWT
         const token = jwt.sign(
-            { userId: foundUser.user_id, email: foundUser.email },
+            { userId: foundUser.user_id, email: foundUser.email, role: foundUser.role },
             process.env.JWT_SECRET,
             { expiresIn: process.env.JWT_EXPIRES_IN || "1d" }
         );

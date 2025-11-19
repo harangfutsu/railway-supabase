@@ -3,23 +3,29 @@
 
 // controllers/courses.controller.js
 const getAllCourse = async (req, res) => {
-    try {
-        // Ambil query params
-        const { category, language, search, sortBy, order } = req.query
+  try {
+    const { category, language, search, sortBy, order, limit = 5, page = 1 } = req.query;
 
-        // Kirim ke model untuk diproses
-        const allCourse = await courseModel.getAllCourse({ category, language, search, sortBy, order })
+    const result = await courseModel.getAllCourse({
+      category,
+      language,
+      search,
+      sortBy,
+      order,
+      limit,
+      page,
+    });
 
-        if (!allCourse || allCourse.length === 0) {
-            return errorHandler(res, false, 404, "Belum ada course yang sesuai dengan kriteria")
-        }
-
-        return successHandler(res, true, 200, "Menampilkan seluruh course", allCourse)
-
-    } catch (error) {
-        return errorHandler(res, false, 500, `Internal Server Error: ${error.message}`)
+    if (!result.data || result.data.length === 0) {
+      return errorHandler(res, false, 404, "Belum ada course yang sesuai dengan kriteria");
     }
-}
+
+    return successHandler(res, true, 200, "Menampilkan seluruh course", result);
+  } catch (error) {
+    return errorHandler(res, false, 500, `Internal Server Error: ${error.message}`);
+  }
+};
+
     const createCourse = async (req, res) => {
         try {
             const {title, category, description, price, language } = req.body
