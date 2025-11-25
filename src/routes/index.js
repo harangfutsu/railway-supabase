@@ -1,11 +1,11 @@
-const router = require('express').Router();
+const router = require('express').Router()
 
 const routes = [
-    require('./courses.route'),
-    require('./users.route'),
-    require("./upload.route"),
+    require('./course.route'),
+    require('./user.route'),
+    require('./upload.route'),
 ];
 
-routes.forEach((route) => router.use(route));
+routes.forEach((route) => router.use(route))
 
 module.exports = router;
