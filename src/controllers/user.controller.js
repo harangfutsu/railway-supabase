@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const { v4: uuidv4 } = require("uuid");
-const { sendVerificationEmail } = require("../services/mailer.service");
+const { v4: uuidv4 } = require("uuid")
+const { sendVerificationEmail } = require("../services/mailer.service")
 const userModel = require('../models/user.model')
 const {successHandler, errorHandler} = require('../utils/helper.responses')
 
@@ -69,9 +69,9 @@ const createUser = async (req, res) => {
 
         sendVerificationEmail(email, verificationToken)
         .then((status) => {
-            if (!status) console.log("⚠️ Email verifikasi gagal dikirim ke:", email);
+            if (!status) console.log("⚠️ Email verifikasi gagal dikirim ke:", email)
         })
-        .catch((err) => console.error("Send email error:", err));
+        .catch((err) => console.error("Send email error:", err))
 
         return successHandler(
             res, 
@@ -237,7 +237,7 @@ const loginUser = async (req, res) => {
         const token = jwt.sign(
             {userId: foundUser.user_id, email : foundUser.email},
             process.env.JWT_SECRET,
-            {expiresIn: process.env.JWT_EXPIRES_IN} // '1d'
+            {expiresIn: process.env.JWT_EXPIRES_IN} 
         )
 
         return successHandler(
@@ -293,12 +293,11 @@ const verifyEmail = async (req, res) => {
 
         await userModel.verifyUserEmail(token)
 
-        return successHandler(
-            res,
-            true,
-            200,
-            "Email verified succesfully"
-        )
+        return res.status(200).json({
+            success: true,
+            message: "Email verified successfully"
+        })
+
     } catch (error) {
         return errorHandler(
             res,
@@ -314,8 +313,7 @@ const getMe = async (req, res) => {
 
     const userId = req.user.userId;
 
-    const user = await userModel.getUserById(userId);
-
+    const user = await userModel.getUserById(userId)
     if (!user) {
         return errorHandler(
             res,

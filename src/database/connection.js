@@ -1,4 +1,3 @@
-// database/connection.js
 const { Pool } = require('pg')
 const config = require('../config')
 
@@ -9,7 +8,7 @@ const pool = new Pool({
     database: config.db.database,
     port: config.db.port,
     ssl: { rejectUnauthorized: false },
-    max: 5 // penting untuk Supabase!
+    max: 5 
 });
 
 

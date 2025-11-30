@@ -1,20 +1,20 @@
-const multer = require("multer");
+const multer = require("multer")
 
-const storage = multer.memoryStorage(); // PENTING
+const storage = multer.memoryStorage()
 
 const fileFilter = (req, file, cb) => {
-    const allowedTypes = ["image/jpeg", "image/png", "image/jpg", "image/webp"];
+    const allowedTypes = ["image/jpeg", "image/png", "image/jpg", "image/webp"]
     if (allowedTypes.includes(file.mimetype)) {
-        cb(null, true);
+        cb(null, true)
     } else {
-        cb(new Error("Format file tidak didukung."));
+        cb(new Error("Format file tidak didukung."))
     }
-};
+}
 
 const upload = multer({
     storage,
     fileFilter,
     limits: { fileSize: 2 * 1024 * 1024 },
-});
+})
 
-module.exports = upload;
+module.exports = upload

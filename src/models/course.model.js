@@ -1,7 +1,6 @@
 const pool = require('../database/connection')
 const crypto = require('crypto')
 
-// GET ALL COURSE
 const getAllCourse = ({ category, language, search, sortBy, order, limit, page }) =>
     new Promise((resolve, reject) => {
         let sql = `
@@ -22,22 +21,22 @@ const getAllCourse = ({ category, language, search, sortBy, order, limit, page }
 
         // Filter
         if (category) {
-            conditions.push(`c.category = $${values.length + 1}`);
+            conditions.push(`c.category = $${values.length + 1}`)
             values.push(category);
         }
 
         if (language) {
-            conditions.push(`c.language = $${values.length + 1}`);
+            conditions.push(`c.language = $${values.length + 1}`)
             values.push(language);
         }
 
         if (search) {
-            conditions.push(`(c.title ILIKE $${values.length + 1} OR c.description ILIKE $${values.length + 2})`);
+            conditions.push(`(c.title ILIKE $${values.length + 1} OR c.description ILIKE $${values.length + 2})`)
             values.push(`%${search}%`, `%${search}%`);
         }
 
         if (conditions.length > 0) {
-            sql += " WHERE " + conditions.join(" AND ");
+            sql += " WHERE " + conditions.join(" AND ")
         }
 
         sql += " GROUP BY c.course_id ";
@@ -53,21 +52,21 @@ const getAllCourse = ({ category, language, search, sortBy, order, limit, page }
                 "reviews": "total_reviews"
             };
 
-            const sortField = allowed[sortBy] || "c.title";
-            const sortOrder = order?.toLowerCase() === "desc" ? "DESC" : "ASC";
+            const sortField = allowed[sortBy] || "c.title"
+            const sortOrder = order?.toLowerCase() === "desc" ? "DESC" : "ASC"
 
-            sql += ` ORDER BY ${sortField} ${sortOrder}`;
+            sql += ` ORDER BY ${sortField} ${sortOrder}`
         } else {
-            sql += ` ORDER BY c.title ASC`;
+            sql += ` ORDER BY c.title ASC`
         }
 
         // Pagination
         if (limit && page) {
-            const limitValue = parseInt(limit);
+            const limitValue = parseInt(limit)
             const offset = (parseInt(page) - 1) * limitValue;
 
-            sql += ` LIMIT $${values.length + 1} OFFSET $${values.length + 2}`;
-            values.push(limitValue, offset);
+            sql += ` LIMIT $${values.length + 1} OFFSET $${values.length + 2}`
+            values.push(limitValue, offset)
         }
 
         pool.query(sql, values)
@@ -75,8 +74,6 @@ const getAllCourse = ({ category, language, search, sortBy, order, limit, page }
             .catch(err => reject(err))
     })
 
-
-// CREATE COURSE
 const createCourse = (title, category, description, price, language) =>
     new Promise((resolve, reject) => {
         const sql = `
@@ -90,8 +87,6 @@ const createCourse = (title, category, description, price, language) =>
             .catch(err => reject(err))
     })
 
-
-// UPDATE COURSE
 const updateCourse = (id, title, category, description, price, language) =>
     new Promise((resolve, reject) => {
         const sql = `
@@ -106,8 +101,6 @@ const updateCourse = (id, title, category, description, price, language) =>
             .catch(err => reject(err))
     })
 
-
-// DELETE COURSE
 const deleteCourse = (id) =>
     new Promise((resolve, reject) => {
         const sql = `DELETE FROM courses WHERE course_id = $1`
@@ -116,8 +109,6 @@ const deleteCourse = (id) =>
             .catch(err => reject(err))
     })
 
-
-// GET BY ID
 const getCourseById = (id) =>
     new Promise((resolve, reject) => {
         const sql = `SELECT * FROM courses WHERE course_id = $1`
