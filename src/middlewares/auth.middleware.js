@@ -22,7 +22,7 @@ const verifyToken = (req, res, next) => {
         next()
 
     } catch (error) {
-        return errorHandler(res, false, 403, "Autentikasi gagal: Token tidak valid atau kaluwarsa")
+        return errorHandler(res, false, 403, "Autentikasi gagal: Token tidak valid atau kadaluwarsa")
 
     }
 }

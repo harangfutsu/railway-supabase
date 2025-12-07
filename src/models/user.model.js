@@ -26,7 +26,7 @@ const updateUser = (userId, fullName, email, gender, country, phone, password) =
     new Promise((resolve, reject) => {
         const sql = `
             UPDATE users
-            SET fullName = $1, email = $2, gender = $3, country = $4, phone = $5, password = $6
+            SET fullname = $1, email = $2, gender = $3, country = $4, phone = $5, password = $6
             WHERE user_id = $7
         `
         const values = [fullName, email, gender, country, phone, password, userId]
@@ -46,7 +46,7 @@ const deleteUser = (userId) =>
 
 const getUserById = (userId) =>
     new Promise((resolve, reject) => {
-        const sql = `SELECT user_id, fullName, email, gender, country, phone FROM users WHERE user_id = $1`
+        const sql = `SELECT user_id, fullname, email, gender, country, phone FROM users WHERE user_id = $1`
         pool.query(sql, [userId])
             .then(res => resolve(res.rows[0]))
             .catch(err => reject(err))
