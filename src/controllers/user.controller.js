@@ -120,7 +120,7 @@ const updateUser = async (req, res) => {
             true, 
             200, 
             "User berhasil diperbarui", 
-            updatedUser)
+            updatedUser.rows)
 
     } catch (error) {
 
@@ -147,7 +147,7 @@ const deleteUser = async (req, res) => {
         }
         
         const deletedUser = await userModel.deleteUser(userId)
-
+        console.log("CONTROLLER DELETE USER:", deletedUser)
         if (deletedUser.rowCount === 0) {
 
             return errorHandler(
@@ -160,7 +160,7 @@ const deleteUser = async (req, res) => {
             res, 
             true, 
             200, 
-            "User berhasil dihapus", {user})
+            "User berhasil dihapus", deletedUser.rows)
 
     } catch (error) {
 
@@ -190,7 +190,7 @@ const getUserById = async (req, res) => {
             true, 
             200, 
             "User berhasil ditemukan", 
-            user)
+            user.rows)
 
     } catch (error) {
 
@@ -210,7 +210,6 @@ const loginUser = async (req, res) => {
         }
 
         const user = await userModel.getUserByEmail(email)
-        console.log("CONTROLLER LOGIN USER:", user)
 
         if (!user || user.length === 0) {
             return errorHandler(res, false, 400, "Email atau password salah")

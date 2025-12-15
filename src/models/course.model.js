@@ -60,11 +60,11 @@ const getAllCourse = ({ category, language, search, sortBy, order, limit, page }
             sql += ` ORDER BY c.title ASC`
         }
 
-        // Pagination
-        if (Number.isInteger(limit) && Number.isInteger(page)) {
-            const limitValue = parseInt(limit)
-            const offset = (parseInt(page) - 1) * limitValue;
+        const limitValue = parseInt(limit)
+        const pageValue = parseInt(page)
 
+        if (!isNaN(limitValue) && !isNaN(pageValue)) {
+            const offset = (pageValue - 1) * limitValue
             sql += ` LIMIT $${values.length + 1} OFFSET $${values.length + 2}`
             values.push(limitValue, offset)
         }
@@ -113,7 +113,7 @@ const deleteCourse = (id) =>
 
 const getCourseById = (id) =>
     new Promise((resolve, reject) => {
-        const sql = `SELECT * FROM courses WHERE course_id = $1`
+        const sql = `SELECT * FROM courses WHERE course_id = $1 RETURNING *`
         pool.query(sql, [id])
             .then(res => resolve(res.rows[0]))
             .catch(err => {

@@ -40,7 +40,7 @@ const updateUser = (userId, fullName, email, gender, country, phone, password) =
 
 const deleteUser = (userId) =>
     new Promise((resolve, reject) => {
-        const sql = `DELETE FROM users WHERE user_id = $1`
+        const sql = `DELETE FROM users WHERE user_id = $1 RETURNING user_id, fullname, email, gender, country, phone, role`
         pool.query(sql, [userId])
             .then(res => resolve(res))
             .catch(err => reject(err))
