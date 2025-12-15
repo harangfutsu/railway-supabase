@@ -9,6 +9,10 @@ const verifyToken = (req, res, next) => {
             return errorHandler(res, false, 401, "Akses ditolak, Token tidak ditemukan")
         }
 
+        if (!authHeader.startsWith("Bearer ")) {
+            return errorHandler(res, false, 401, "Format token tidak valid")
+        }
+
         const token = authHeader.split(' ')[1]
 
         if (!token) {

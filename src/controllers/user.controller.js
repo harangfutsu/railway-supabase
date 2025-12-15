@@ -78,7 +78,7 @@ const createUser = async (req, res) => {
             true, 
             201, 
             "User berhasil dibuat. Silakan cek email untuk verifikasi akun.", 
-            {fullName, email, gender, country, phone})
+            createdUser.rows)
 
     } catch (error) {
 
@@ -120,7 +120,7 @@ const updateUser = async (req, res) => {
             true, 
             200, 
             "User berhasil diperbarui", 
-            {userId, fullName, email, gender, country, phone})
+            updatedUser)
 
     } catch (error) {
 
@@ -137,13 +137,13 @@ const deleteUser = async (req, res) => {
 
         const user = await userModel.getUserById(userId)
 
-        if (!user || user.length === 0) {
+        if (!user) {
 
             return errorHandler(
                 res, 
                 false, 
                 404, 
-                "User tidak ditemukan")
+                "User id tidak ditemukan")
         }
         
         const deletedUser = await userModel.deleteUser(userId)
@@ -154,7 +154,7 @@ const deleteUser = async (req, res) => {
                 res, 
                 false, 
                 404, 
-                "User tidak ditemukan")}
+                "User gagal dihapus")}
 
         return successHandler(
             res, 
@@ -177,7 +177,7 @@ const getUserById = async (req, res) => {
 
         const user = await userModel.getUserById(userId)
 
-        if (!user || user.length === 0) {
+        if (!user) {
 
             return errorHandler(
                 res, 
@@ -210,15 +210,14 @@ const loginUser = async (req, res) => {
         }
 
         const user = await userModel.getUserByEmail(email)
-
-        console.log('data user', user)
+        console.log("CONTROLLER LOGIN USER:", user)
 
         if (!user || user.length === 0) {
             return errorHandler(res, false, 400, "Email atau password salah")
         }
+
         const foundUser = user[0]
 
-        console.log('data foundUser', foundUser)
         if (!foundUser.is_verified) {
             return errorHandler(
                 res,
@@ -280,8 +279,6 @@ const verifyEmail = async (req, res) => {
 
         const user = await userModel.getUserByVerificationToken(token)
 
-        console.log('data getUserByVerificationToken', user)
-
         if (!user || user.length === 0) {
             return errorHandler(
                 res,
@@ -314,6 +311,7 @@ const getMe = async (req, res) => {
     const userId = req.user.userId;
 
     const user = await userModel.getUserById(userId)
+    console.log("CONTROLLER GET ME:", user)
     if (!user) {
         return errorHandler(
             res,

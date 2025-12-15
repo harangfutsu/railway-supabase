@@ -61,7 +61,7 @@ const getAllCourse = ({ category, language, search, sortBy, order, limit, page }
         }
 
         // Pagination
-        if (limit && page) {
+        if (Number.isInteger(limit) && Number.isInteger(page)) {
             const limitValue = parseInt(limit)
             const offset = (parseInt(page) - 1) * limitValue;
 
@@ -79,6 +79,7 @@ const createCourse = (title, category, description, price, language) =>
         const sql = `
             INSERT INTO courses (course_id, title, category, description, price, language)
             VALUES ($1, $2, $3, $4, $5, $6)
+            RETURNING *
         `
         const values = [crypto.randomUUID(), title, category, description, price, language]
 
@@ -93,6 +94,7 @@ const updateCourse = (id, title, category, description, price, language) =>
             UPDATE courses
             SET title = $1, category = $2, description = $3, price = $4, language = $5
             WHERE course_id = $6
+            RETURNING *
         `
         const values = [title, category, description, price, language, id]
 
@@ -103,7 +105,7 @@ const updateCourse = (id, title, category, description, price, language) =>
 
 const deleteCourse = (id) =>
     new Promise((resolve, reject) => {
-        const sql = `DELETE FROM courses WHERE course_id = $1`
+        const sql = `DELETE FROM courses WHERE course_id = $1 RETURNING *`
         pool.query(sql, [id])
             .then(res => resolve(res))
             .catch(err => reject(err))
@@ -114,7 +116,10 @@ const getCourseById = (id) =>
         const sql = `SELECT * FROM courses WHERE course_id = $1`
         pool.query(sql, [id])
             .then(res => resolve(res.rows[0]))
-            .catch(err => reject(err))
+            .catch(err => {
+                console.error('QUERY ERROR:', err);      // 👈 log error
+                reject(err);
+            })
     })
 
 module.exports = {

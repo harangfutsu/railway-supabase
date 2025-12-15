@@ -14,7 +14,7 @@ const createUser = (fullName, email, gender, country, phone, password, verificat
         const sql = `
             INSERT INTO users (user_id, fullname, email, gender, country, phone, password, verification_token, is_verified, role)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, false, 'user')
-
+            RETURNING user_id, fullname, email, gender, country, phone
         `
         const values = [crypto.randomUUID(), fullName, email, gender, country, phone, password, verificationToken]
 
@@ -29,6 +29,7 @@ const updateUser = (userId, fullName, email, gender, country, phone, password) =
             UPDATE users
             SET fullname = $1, email = $2, gender = $3, country = $4, phone = $5, password = $6
             WHERE user_id = $7
+            RETURNING fullname, email, gender, country, phone
         `
         const values = [fullName, email, gender, country, phone, password, userId]
 
@@ -47,7 +48,7 @@ const deleteUser = (userId) =>
 
 const getUserById = (userId) =>
     new Promise((resolve, reject) => {
-        const sql = `SELECT user_id, fullname, email, gender, country, phone FROM users WHERE user_id = $1`
+        const sql = `SELECT user_id, fullname, email, gender, country, phone, role FROM users WHERE user_id = $1`
         pool.query(sql, [userId])
             .then(res => resolve(res.rows[0]))
             .catch(err => reject(err))

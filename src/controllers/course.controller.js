@@ -7,14 +7,13 @@ const getAllCourse = async (req, res) => {
         const {category, language, search, sortBy, order, limit = 6, page = 1} = req.query
 
         const allCourse = await courseModel.getAllCourse({category, language, search, sortBy, order, limit: Number(limit), page : Number(page)})
-
         if (!allCourse || allCourse.length === 0){
 
             return errorHandler(
                 res, 
                 false, 
                 404, 
-                "Belum ada course yang sesuai dengan kriteria")}
+                "Belum ada course yang terdaftar")}
 
         return successHandler(
             res, 
@@ -45,7 +44,6 @@ const createCourse = async (req, res) => {
         }
 
         const createdCourse = await courseModel.createCourse(title, category, description, price, language)
-        console.log('data createdCourse', createdCourse)
 
         if (createdCourse.rowCount === 0) {
 
@@ -60,7 +58,7 @@ const createCourse = async (req, res) => {
             true, 
             201, 
             "Course berhasil dibuat", 
-            req.body)
+            createdCourse.rows)
 
     } catch (error) {
 
@@ -85,7 +83,6 @@ const updateCourse = async (req, res) => {
                 "Semua field wajib diisi")}
 
         const updatedCourse = await courseModel.updateCourse(id, title, category, description, price, language)
-        console.log('data updatedCourse', updatedCourse)
 
         if (updatedCourse.rowCount === 0) {
 
@@ -100,7 +97,7 @@ const updateCourse = async (req, res) => {
             true, 
             200, 
             "Course berhasil diperbarui", 
-            {id, ...req.body})
+            updatedCourse.rows)
 
     } catch (error) {
 
@@ -116,31 +113,29 @@ const deleteCourse = async (req, res) => {
         const {id} = req.params
 
         const course = await courseModel.getCourseById(id)
-
-        if (!course || course.length === 0) {
+        if (!course) {
 
             return errorHandler(
                 res, 
                 false, 
                 404, 
-                "Course tidak ditemukan")
+                "Course id tidak ditemukan")
         }
         
         const deletedCourse = await courseModel.deleteCourse(id)
-
         if (deletedCourse.rowCount === 0) {
 
             return errorHandler(
                 res, 
                 false, 
                 404, 
-                "Course tidak ditemukan")}
+                "Course gagal dihapus")}
 
         return successHandler(
             res, 
             true, 
             200, 
-            "Course berhasil dihapus", course)
+            "Course berhasil dihapus", deletedCourse.rows)
 
     } catch (error) {
 
@@ -157,7 +152,7 @@ const getCourseById = async (req, res) => {
 
         const course = await courseModel.getCourseById(id)
 
-        if (!course || course.length === 0) {
+        if (!course) {
 
             return errorHandler(
                 res, 
