@@ -5,7 +5,7 @@ const getAllUsers = () =>
     new Promise((resolve, reject) => {
         const sql = 'SELECT user_id, fullname, email, gender, country, phone FROM users'
         pool.query(sql)
-            .then(res => resolve(res.rows))
+            .then(res => resolve(res))
             .catch(err => reject(err))
     })
 
@@ -50,7 +50,7 @@ const getUserById = (userId) =>
     new Promise((resolve, reject) => {
         const sql = `SELECT user_id, fullname, email, gender, country, phone, role FROM users WHERE user_id = $1`
         pool.query(sql, [userId])
-            .then(res => resolve(res.rows[0]))
+            .then(res => resolve(res))
             .catch(err => reject(err))
     })
 
@@ -58,7 +58,7 @@ const getUserByEmail = (email) =>
     new Promise((resolve, reject) => {
         const sql = `SELECT * FROM users WHERE email = $1`
         pool.query(sql, [email])
-            .then(res => resolve(res.rows))
+            .then(res => resolve(res))
             .catch(err => reject(err))
     })
 
@@ -66,7 +66,7 @@ const getUserByVerificationToken = (token) =>
     new Promise((resolve, reject) => {
         const sql = `SELECT * FROM users WHERE verification_token = $1`
         pool.query(sql, [token])
-            .then(res => resolve(res.rows))
+            .then(res => resolve(res))
             .catch(err => reject(err))
     })
 

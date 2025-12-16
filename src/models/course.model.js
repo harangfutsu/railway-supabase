@@ -39,7 +39,7 @@ const getAllCourse = ({ category, language, search, sortBy, order, limit, page }
             sql += " WHERE " + conditions.join(" AND ")
         }
 
-        sql += " GROUP BY c.course_id ";
+        sql += " GROUP BY c.course_id, c.title, c.category, c.description, c.price, c.language ";
 
         // Sorting
         if (sortBy) {
@@ -64,13 +64,16 @@ const getAllCourse = ({ category, language, search, sortBy, order, limit, page }
         const pageValue = parseInt(page)
 
         if (!isNaN(limitValue) && !isNaN(pageValue)) {
-            const offset = (pageValue - 1) * limitValue
+
+            const safePage = pageValue < 1 ? 1 : pageValue
+            const offset = (safePage - 1) * limitValue
+
             sql += ` LIMIT $${values.length + 1} OFFSET $${values.length + 2}`
             values.push(limitValue, offset)
         }
 
         pool.query(sql, values)
-            .then(res => resolve(res.rows))
+            .then(res => resolve(res))
             .catch(err => reject(err))
     })
 
@@ -113,9 +116,9 @@ const deleteCourse = (id) =>
 
 const getCourseById = (id) =>
     new Promise((resolve, reject) => {
-        const sql = `SELECT * FROM courses WHERE course_id = $1 RETURNING *`
+        const sql = `SELECT * FROM courses WHERE course_id = $1`
         pool.query(sql, [id])
-            .then(res => resolve(res.rows[0]))
+            .then(res => resolve(res))
             .catch(err => {
                 console.error('QUERY ERROR:', err);      // 👈 log error
                 reject(err);

@@ -8,7 +8,7 @@ router.put('/users/:userId', authMiddleware.verifyToken, userControllers.updateU
 router.delete('/users/:userId', authMiddleware.verifyToken, userControllers.deleteUser)
 router.get('/users/:userId', authMiddleware.verifyToken, userControllers.getUserById)
 
-router.post('/login', userControllers.loginUser,)
+router.post('/login', userControllers.loginUser)
 router.post('/register', userControllers.createUser)
 router.get('/verify-email', userControllers.verifyEmail)
 

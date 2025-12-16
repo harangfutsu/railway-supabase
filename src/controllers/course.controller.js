@@ -7,7 +7,7 @@ const getAllCourse = async (req, res) => {
         const {category, language, search, sortBy, order, limit = 6, page = 1} = req.query
 
         const allCourse = await courseModel.getAllCourse({category, language, search, sortBy, order, limit: Number(limit), page : Number(page)})
-        if (!allCourse || allCourse.length === 0){
+        if (allCourse.rowCount === 0){
 
             return errorHandler(
                 res, 
@@ -20,7 +20,7 @@ const getAllCourse = async (req, res) => {
             true, 
             200, 
             "Menampilkan seluruh course", 
-            allCourse)
+            allCourse.rows)
 
     } catch (error) {
 
@@ -97,7 +97,7 @@ const updateCourse = async (req, res) => {
             true, 
             200, 
             "Course berhasil diperbarui", 
-            updatedCourse.rows)
+            updatedCourse.rows[0])
 
     } catch (error) {
 
@@ -113,7 +113,7 @@ const deleteCourse = async (req, res) => {
         const {id} = req.params
 
         const course = await courseModel.getCourseById(id)
-        if (!course) {
+        if (course.rowCount === 0) {
 
             return errorHandler(
                 res, 
@@ -135,7 +135,7 @@ const deleteCourse = async (req, res) => {
             res, 
             true, 
             200, 
-            "Course berhasil dihapus", deletedCourse.rows)
+            "Course berhasil dihapus", deletedCourse.rows[0])
 
     } catch (error) {
 
@@ -152,7 +152,7 @@ const getCourseById = async (req, res) => {
 
         const course = await courseModel.getCourseById(id)
 
-        if (!course) {
+        if (course.rowCount === 0) {
 
             return errorHandler(
                 res, 
@@ -165,7 +165,7 @@ const getCourseById = async (req, res) => {
             true, 
             200, 
             "Course berhasil ditemukan", 
-            course)
+            course.rows[0])
 
     } catch (error) {
 

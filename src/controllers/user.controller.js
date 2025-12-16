@@ -10,7 +10,7 @@ const getAllUsers = async (req, res) => {
     try {
         const allUser = await userModel.getAllUsers()
 
-        if (!allUser || allUser.length === 0){
+        if (allUser.rowCount === 0){
 
             return errorHandler(
                 res, 
@@ -23,7 +23,7 @@ const getAllUsers = async (req, res) => {
             true, 
             200, 
             "Menampilkan seluruh user", 
-            allUser)
+            allUser.rows)
 
     } catch (error) {
 
@@ -113,14 +113,14 @@ const updateUser = async (req, res) => {
                 res, 
                 false, 
                 404, 
-                "Gagal membuat user")}
+                "Gagal memperbarui user")}
         
         return successHandler(
             res, 
             true, 
             200, 
             "User berhasil diperbarui", 
-            updatedUser.rows)
+            updatedUser.rows[0])
 
     } catch (error) {
 
@@ -137,7 +137,7 @@ const deleteUser = async (req, res) => {
 
         const user = await userModel.getUserById(userId)
 
-        if (!user) {
+        if (user.rowCount === 0) {
 
             return errorHandler(
                 res, 
@@ -147,7 +147,7 @@ const deleteUser = async (req, res) => {
         }
         
         const deletedUser = await userModel.deleteUser(userId)
-        console.log("CONTROLLER DELETE USER:", deletedUser)
+
         if (deletedUser.rowCount === 0) {
 
             return errorHandler(
@@ -160,7 +160,7 @@ const deleteUser = async (req, res) => {
             res, 
             true, 
             200, 
-            "User berhasil dihapus", deletedUser.rows)
+            "User berhasil dihapus", deletedUser.rows[0])
 
     } catch (error) {
 
@@ -177,7 +177,7 @@ const getUserById = async (req, res) => {
 
         const user = await userModel.getUserById(userId)
 
-        if (!user) {
+        if (user.rowCount === 0) {
 
             return errorHandler(
                 res, 
@@ -190,7 +190,7 @@ const getUserById = async (req, res) => {
             true, 
             200, 
             "User berhasil ditemukan", 
-            user.rows)
+            user.rows[0])
 
     } catch (error) {
 
@@ -211,11 +211,11 @@ const loginUser = async (req, res) => {
 
         const user = await userModel.getUserByEmail(email)
 
-        if (!user || user.length === 0) {
+        if (user.rowCount === 0) {
             return errorHandler(res, false, 400, "Email atau password salah")
         }
 
-        const foundUser = user[0]
+        const foundUser = user.rows[0]
 
         if (!foundUser.is_verified) {
             return errorHandler(
@@ -278,7 +278,7 @@ const verifyEmail = async (req, res) => {
 
         const user = await userModel.getUserByVerificationToken(token)
 
-        if (!user || user.length === 0) {
+        if (!user || user.rowCount === 0) {
             return errorHandler(
                 res,
                 false,
@@ -287,7 +287,11 @@ const verifyEmail = async (req, res) => {
             )
         }
 
-        await userModel.verifyUserEmail(token)
+        const result = await userModel.verifyUserEmail(token)
+
+        if (result.rowCount === 0) {
+            return errorHandler(res, false, 400, "Token sudah tidak valid")
+        }
 
         return res.status(200).json({
             success: true,
@@ -310,24 +314,23 @@ const getMe = async (req, res) => {
     const userId = req.user.userId;
 
     const user = await userModel.getUserById(userId)
-    console.log("CONTROLLER GET ME:", user)
-    if (!user) {
+
+    if (user.rowCount === 0) {
         return errorHandler(
             res,
             false,
             404,
             "User tidak ditemukan"
-        );
+        )
         }
-        
 
         return successHandler(
         res,
         true,
         200,
         "Data user login",
-        user
-        );
+        user.rows[0]
+        )
 
     } catch (error) {
         return errorHandler(
